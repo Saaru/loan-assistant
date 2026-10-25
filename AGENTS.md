@@ -15,6 +15,7 @@ make setup                 # creates .venv, installs requirements, creates .env,
 # then put GROQ_API_KEY=gsk_... in .env (or ANTHROPIC_API_KEY / GEMINI_API_KEY). Ask the user for it; never print or commit it.
 make run                   # core systems on :8100, assistant on :8000; reseeds demo data for today's date
 make test                  # 24 tests, about a second, no network or API key needed
+make eval                  # 17 graded customer questions against the running app (uses the model; ~6 min with pauses)
 ```
 
 Without `make`: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m scripts.run`.
@@ -82,7 +83,7 @@ docs/ARCHITECTURE.md             design, decisions, trade-offs; docs/PERFORMANCE
 - **Actions** never execute inside a tool. A tool calls `ctx.actions.propose(...)` and returns `pending.for_model()`; the `@action` executor runs only after confirmation. Every backend write passes `idempotency_key=f"{key}:<step>"`.
 - **Business rules read their parameters from policy YAML** (`pol.rule("PP-2").params`), so a fee or limit change is a policy edit with a new version and `effective_from`, not a code change.
 - **Conversation history is append-only** (the orchestrator rolls back a failed turn rather than editing earlier messages).
-- Run `make test` before finishing. Add a test next to the closest existing one in `tests/`.
+- Run `make test` before finishing. Add a test next to the closest existing one in `tests/`. After changing prompts, tools or rules, run `make eval` and compare with `docs/EVALS.md`; add a case to `evals/cases.yaml` for any new behaviour.
 - Never commit `.env`, anything in `data/`, or real personal data. Keep all names and data fictional.
 
 ## Common tasks

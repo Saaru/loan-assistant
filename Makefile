@@ -1,6 +1,6 @@
 PY ?= .venv/bin/python
 
-.PHONY: setup run seed test bench voices
+.PHONY: setup run seed test bench voices eval
 
 setup:            ## create the virtualenv and install dependencies
 	python3 -m venv .venv
@@ -24,3 +24,6 @@ test:             ## unit and integration tests (no LLM calls)
 
 bench:            ## latency benchmark (needs the app running and an API key)
 	$(PY) -m scripts.bench
+
+eval:             ## evaluation cases graded without a model (needs the app running and an API key)
+	$(PY) -m scripts.evals

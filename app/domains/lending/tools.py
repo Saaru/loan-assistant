@@ -157,7 +157,10 @@ async def get_loans(ctx: ToolContext, args: LoansArgs) -> dict:
     loans = [await owned_loan(ctx, args.loan_id)] if args.loan_id else await customer_loans(ctx)
     outlooks = await asyncio.gather(*(rate_outlook(ctx, l) for l in loans))
     briefs = [loan_brief(l) | ({"rate_outlook": o} if o else {}) for l, o in zip(loans, outlooks)]
-    return {"loans": briefs, "as_of": fmt(ctx.today)}
+    result = {"loans": briefs, "as_of": fmt(ctx.today)}
+    if len(loans) > 1:  # customers ask for totals; give one so the model never adds figures itself
+        result["total_of_next_emis"] = inr(sum((D(l["next_emi_amount"]) for l in loans if l["next_emi_amount"]), Decimal(0)))
+    return result
 
 
 class ScheduleArgs(BaseModel):

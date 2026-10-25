@@ -28,7 +28,8 @@ class AnthropicProvider:
                                               "is_error": o.is_error} for o in outcomes]}]
 
     async def stream_round(self, system: str, messages: list, tools: list[dict], effort: str,
-                           on_text: OnText, on_tool_start: OnToolStart) -> Round:
+                           on_text: OnText, on_tool_start: OnToolStart, require_tool: bool = False) -> Round:
+        # Forced tool choice is not available on current Claude models; the switch result's note asks instead.
         tool_params = [{**t, "eager_input_streaming": True} for t in tools]
         for attempt in range(3):
             try:

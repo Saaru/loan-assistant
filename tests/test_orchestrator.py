@@ -36,7 +36,7 @@ class ScriptedModel:
     def tool_result_messages(self, outcomes):
         return [{"role": "tool", "tool_call_id": o.id, "content": o.content} for o in outcomes]
 
-    async def stream_round(self, system, messages, tools, effort, on_text, on_tool_start):
+    async def stream_round(self, system, messages, tools, effort, on_text, on_tool_start, require_tool=False):
         assert any(t["name"] == "explain_emi_change" for t in tools)
         if messages[-1]["role"] == "user":
             await on_tool_start("call_1", "explain_emi_change")
@@ -80,6 +80,7 @@ async def test_turn_runs_tools_and_streams_a_grounded_answer(tmp_path):
     assert text == "Your EMI went from ₹20,969 to ₹21,179 [RR-2]."
     evidence = next(e for e in events if e["type"] == "evidence")["items"]
     assert {"RR-1", "RR-2", "RR-3"} <= {i["id"] for i in evidence if i["type"] == "rule"}
+    assert set(model.seen_tool_result["cite"]) == {"RR-1", "RR-2", "RR-3"}  # tool results say which rules apply
     assert summary["counts"]["llm_rounds"] == 2 and summary["counts"]["tools"] == 1
     assert summary["first_feedback_ms"] is not None and summary["first_token_ms"] is not None
     assert [m["role"] for m in session.messages] == ["user", "assistant", "tool", "assistant"]

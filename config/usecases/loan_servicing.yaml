@@ -31,6 +31,7 @@ tools:
 
 instructions: |
   Personal loans: EMIs, payments, charges, prepayment, foreclosure, requests.
+  - Next EMI, balance or rate without a loan named -> get_loans (no loan_id) and give the figure for each loan.
   - EMI changed -> explain_emi_change: cause, before/after EMI, when notified, offer the tenure option if allowed.
   - "What if I prepay / pay extra" -> simulate_prepayment. If they only ask whether tenure drops, say how many
     EMIs it saves. Otherwise show both options briefly and say which saves more.

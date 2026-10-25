@@ -141,7 +141,8 @@ class Orchestrator:
             ctx.session.active = args.workspace
             target = usecases[args.workspace]
             await ctx.emit({"type": "workspace_switched", "usecase": target.public()})
-            return {"switched_to": target.name, "note": "Its tools are available now. Continue with the request."}
+            return {"switched_to": target.name, "note": "Its tools are available now. Do not answer yet: call the "
+                    "tool that looks up what the customer asked, then answer from its result."}
 
         names = "; ".join(f"{uc.id} for {uc.tagline.lower()}" for uc in others)
         return ToolSpec("switch_workspace", f"Required before answering anything about another workspace's topics, "
@@ -153,6 +154,7 @@ class Orchestrator:
         planned_for = session.active
         specs, allowed, tools, system, effort = self._plan(session, ctx, channel)
         streamed = trace.extra.setdefault("streamed", [])
+        just_switched = False
         state = {"text_started": False, "separator": False}
 
         async def on_text(text: str):
@@ -172,7 +174,9 @@ class Orchestrator:
             start = trace.now_ms()
             first_token_before = trace.first_token_ms
             state["text_started"] = False
-            result = await self.llm.stream_round(system, session.messages, tools, effort, on_text, on_tool_start)
+            result = await self.llm.stream_round(system, session.messages, tools, effort, on_text, on_tool_start,
+                                                 require_tool=just_switched)
+            just_switched = False
             state["separator"] = state["separator"] or state["text_started"]
             for key in trace.usage:
                 trace.usage[key] += result.usage.get(key, 0)
@@ -196,6 +200,7 @@ class Orchestrator:
             if session.active != planned_for:  # the model switched workspace: load that workspace's tools
                 planned_for = session.active
                 specs, allowed, tools, system, effort = self._plan(session, ctx, channel)
+                just_switched = True  # and make it look the answer up there rather than reply from memory
                 trace.usecases.append(session.active)
         note = "That needed more steps than I can take in one go. Could you narrow the question down a little?"
         session.messages.extend(self.llm.assistant_messages(note))
@@ -208,6 +213,7 @@ class Orchestrator:
         if spec is None:
             return ToolOutcome(call.id, json.dumps({"error": f"Tool {call.name} is not available here."}), True)
         tool_token = current_tool.set(spec.name)
+        rules_before = {i["id"] for i in ctx.evidence.items if i["type"] == "rule"}
         await ctx.emit({"type": "tool_start", "id": call.id, "name": spec.name, "label": spec.label})
         degraded = False
         try:
@@ -237,6 +243,9 @@ class Orchestrator:
             result, is_error = {"error": f"Internal error in {spec.name}"}, True
         finally:
             current_tool.reset(tool_token)
+        applied = [i["id"] for i in ctx.evidence.items if i["type"] == "rule" and i["id"] not in rules_before]
+        if applied and isinstance(result, dict) and not is_error:
+            result["cite"] = applied  # the rule IDs this result rests on, so citations are exact
         span = trace.add_span("tool", spec.name, start, ok=not is_error, degraded=degraded)
         systems = sorted({s.attrs["system"] for s in trace.spans
                           if s.kind == "backend" and s.attrs.get("tool") == spec.name and s.start_ms >= start - 1})

@@ -10,7 +10,7 @@ It is not a chatbot over documents. Answers come from the customer's own account
 - **Live voice**: talk to the same assistant. It speaks a short acknowledgement while it looks things up, answers in a sentence or two, and stops the moment you talk over it, carrying on with what you said instead.
 - **Measured**: every turn is traced (LLM rounds, tools, backend calls) and the numbers are shown in the UI and in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, decisions and trade-offs.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the design, decisions and trade-offs, and [docs/EVALS.md](docs/EVALS.md) with [evals/FINDINGS.md](evals/FINDINGS.md) for how accuracy is measured and what the evaluations caught.
 
 ## Quick start
 
@@ -81,6 +81,7 @@ tests/             unit and integration tests (no LLM calls)
 
 ```bash
 make test                                        # unit, integration and conversation-loop tests; no API calls
+make eval                                        # 17 graded customer questions through the live app (app must be running)
 .venv/bin/python -m scripts.bench --runs 2       # scripted journeys through the real chat API (app must be running)
 .venv/bin/python -m scripts.bench --platform-load 100   # no-LLM load test of tools + core systems
 ```

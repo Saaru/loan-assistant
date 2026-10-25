@@ -41,7 +41,7 @@ class InterruptibleModel:
     def tool_result_messages(self, outcomes):
         return []
 
-    async def stream_round(self, system, messages, tools, effort, on_text, on_tool_start):
+    async def stream_round(self, system, messages, tools, effort, on_text, on_tool_start, require_tool=False):
         assert "live voice conversation" in system
         await on_text("Your next EMI is ")
         await asyncio.sleep(30)

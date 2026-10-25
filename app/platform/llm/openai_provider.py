@@ -40,7 +40,7 @@ class OpenAICompatibleProvider:
         return [{"role": "tool", "tool_call_id": o.id, "content": o.content} for o in outcomes]
 
     async def stream_round(self, system: str, messages: list, tools: list[dict], effort: str,
-                           on_text: OnText, on_tool_start: OnToolStart) -> Round:
+                           on_text: OnText, on_tool_start: OnToolStart, require_tool: bool = False) -> Round:
         messages = compact_history(messages)
         spoke = {"text": False}
 
@@ -54,7 +54,8 @@ class OpenAICompatibleProvider:
             for model in self.models:
                 for _ in range(2):
                     try:
-                        return await self._round(model, system, messages, tools, effort, text_once, on_tool_start)
+                        return await self._round(model, system, messages, tools, effort, text_once, on_tool_start,
+                                                 require_tool)
                     except openai.RateLimitError as exc:  # raised before any output streams
                         last_error = exc
                         waits.append(_retry_after(exc))
@@ -83,7 +84,8 @@ class OpenAICompatibleProvider:
             extra["extra_body"] = {"reasoning_format": "hidden"}  # keep <think> text out of the answer
         return extra
 
-    async def _round(self, model, system, messages, tools, effort, on_text, on_tool_start) -> Round:
+    async def _round(self, model, system, messages, tools, effort, on_text, on_tool_start,
+                     require_tool: bool = False) -> Round:
         stream = await self.client.chat.completions.create(
             model=model,
             messages=[{"role": "system", "content": system}, *messages],
@@ -92,6 +94,7 @@ class OpenAICompatibleProvider:
             max_completion_tokens=self.max_tokens,
             stream=True,
             stream_options={"include_usage": True},
+            **({"tool_choice": "required"} if require_tool else {}),
             **self._params(model, effort),
         )
         text: list[str] = []

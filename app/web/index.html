@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+</head>
+<body class="signed-out">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">N</div>
+      <div>
+        <div class="brand-name" id="brand-name">Northwind Finance</div>
+        <div class="brand-sub">Customer assistant</div>
+      </div>
+    </div>
+    <nav class="tabs" id="workspace-tabs" aria-label="Workspace"></nav>
+    <div class="topbar-right">
+      <div class="who" id="who" hidden>
+        <span class="avatar" id="who-avatar"></span>
+        <span id="who-name"></span>
+        <button class="link" id="switch-customer">Switch</button>
+      </div>
+      <button class="icon-btn" id="ops-toggle" title="Operations: latency, chaos, traces">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
+        <span>Ops</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="layout" id="layout">
+    <aside class="account" id="account" aria-label="Account overview">
+      <div class="account-head">
+        <h2>Your accounts</h2>
+        <span class="muted small" id="as-of"></span>
+      </div>
+      <div id="panels"></div>
+    </aside>
+
+    <section class="chat" aria-label="Conversation">
+      <div class="thread" id="thread"></div>
+      <div class="composer-wrap">
+        <div class="voicebar" id="voicebar" hidden data-state="listening">
+          <span class="vmeter" id="vmeter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="vstate" id="vstate">Listening</span>
+          <span class="vhint">Speak, then pause. Talk over the assistant to interrupt.</span>
+          <button type="button" class="btn small-btn" id="vsend" title="Send what you just said">Send</button>
+          <button type="button" class="btn small-btn" id="vresume" hidden>Resume</button>
+          <button type="button" class="btn ghost small-btn" id="vstop">End voice</button>
+        </div>
+        <div class="vnote" id="vnote" hidden></div>
+        <div class="suggestions" id="suggestions"></div>
+        <form class="composer" id="composer">
+          <textarea id="input" rows="1" placeholder="Ask about your EMIs, payments, prepayment, foreclosure..." autocomplete="off"></textarea>
+          <button type="button" class="mic" id="mic" title="Talk">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </button>
+          <button type="submit" class="send" id="send" title="Send">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+        <div class="footnote" id="footnote"></div>
+      </div>
+    </section>
+
+    <aside class="ops" id="ops" hidden aria-label="Operations">
+      <div class="ops-head">
+        <h2>Operations</h2>
+        <button class="icon-btn" id="ops-close" title="Close">&times;</button>
+      </div>
+      <section>
+        <h3>Enterprise systems</h3>
+        <p class="muted small">Inject latency or failures to see how the assistant copes.</p>
+        <div id="systems"></div>
+      </section>
+      <section>
+        <h3>Latency (this run)</h3>
+        <div id="metrics"></div>
+      </section>
+      <section>
+        <h3>Last turn</h3>
+        <div id="trace"></div>
+      </section>
+      <section>
+        <button class="btn ghost" id="reset-demo">Reset demo data</button>
+      </section>
+    </aside>
+  </main>
+
+  <div class="signin" id="signin" hidden>
+    <div class="signin-card">
+      <div class="logo big" aria-hidden="true">N</div>
+      <h1 id="signin-title">Sign in</h1>
+      <p class="muted">Demo customers. In production the customer arrives already signed in from the app.</p>
+      <div class="customers" id="customers"></div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script src="/static/voice.js"></script>
+</body>
+</html>

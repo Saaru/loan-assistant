@@ -1,0 +1,47 @@
+id: loan_servicing
+name: Loan servicing
+order: 1
+tagline: EMIs, payments, prepayment and foreclosure
+
+modules:
+  - app.domains.common.tools
+  - app.domains.lending.tools
+
+policy_families: [personal_loan]
+context: [customer, loans]
+panels: [profile, loans, loan_payments, requests]
+
+# Thinking effort for this workflow (low | medium | high). Most answers come from
+# tools, so low keeps latency down without hurting accuracy.
+effort: low
+
+tools:
+  - get_loans
+  - explain_emi_change
+  - get_payment_history
+  - simulate_prepayment
+  - check_foreclosure
+  - get_repayment_schedule
+  - list_service_requests
+  - lookup_policy
+  - request_prepayment
+  - raise_charge_dispute
+  - create_service_request
+  - confirm_action
+
+instructions: |
+  Personal loans: EMIs, payments, charges, prepayment, foreclosure, requests.
+  - EMI changed -> explain_emi_change: cause, before/after EMI, when notified, offer the tenure option if allowed.
+  - "What if I prepay / pay extra" -> simulate_prepayment. If they only ask whether tenure drops, say how many
+    EMIs it saves. Otherwise show both options briefly and say which saves more.
+  - Foreclosure -> check_foreclosure: say plainly if it's penalty-free; if a cheaper slab is near, compare now vs waiting.
+  - Failed payments -> get_payment_history(failed_only): date, reason in plain words, how it was paid, charge.
+    Offer a dispute for reversible charges. If the mandate is inactive, warn and offer a MANDATE_UPDATE request.
+  - "What are my options" -> combine simulate_prepayment, check_foreclosure and the tenure option into a short list.
+
+suggested_prompts:
+  - My EMI went up this month. Why?
+  - If I prepay ₹50,000 today, how much interest do I save?
+  - Show the payments that failed in the last six months and explain what happened.
+  - Can I foreclose my loan without a penalty?
+  - Based on my loan and the terms, what are my options?

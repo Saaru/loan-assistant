@@ -1,0 +1,51 @@
+# One entry per enterprise system.
+#   simulate: how the mock server behaves (latency distribution, failure rates).
+#   client:   how the assistant's connector layer calls it (timeouts, retries,
+#             read cache, circuit breaker).
+# Latency is sampled from a log-normal distribution fitted to p50/p95.
+
+systems:
+  crm:
+    display_name: Customer CRM
+    prefix: /crm
+    simulate: {latency_ms: {p50: 90, p95: 250}, error_rate: 0.01}
+    client: {timeout_s: 1.5, retries: 2, cache_ttl_s: 120, breaker: {failures: 5, reset_s: 20}}
+
+  loans:
+    display_name: Loan Management
+    prefix: /loans
+    simulate: {latency_ms: {p50: 180, p95: 600}, error_rate: 0.02}
+    client: {timeout_s: 2.5, retries: 2, cache_ttl_s: 30, breaker: {failures: 5, reset_s: 20}}
+
+  payments:
+    display_name: Payments
+    prefix: /payments
+    simulate: {latency_ms: {p50: 450, p95: 1500}, error_rate: 0.05}
+    client: {timeout_s: 3.0, retries: 2, cache_ttl_s: 30, breaker: {failures: 5, reset_s: 20}}
+
+  policy:
+    display_name: Policy Knowledge
+    prefix: /policy
+    simulate: {latency_ms: {p50: 60, p95: 150}, error_rate: 0.01}
+    client: {timeout_s: 1.0, retries: 1, cache_ttl_s: 600, breaker: {failures: 5, reset_s: 20}}
+
+  service_ops:
+    display_name: Service Operations
+    prefix: /service-ops
+    # lost_response_rate: the write commits but the response never arrives,
+    # which is what idempotency keys protect against.
+    simulate: {latency_ms: {p50: 300, p95: 900}, error_rate: 0.03, lost_response_rate: 0.05}
+    client: {timeout_s: 3.0, retries: 2, cache_ttl_s: 15, breaker: {failures: 5, reset_s: 20}}
+
+  cards:
+    display_name: Card Management
+    prefix: /cards
+    simulate: {latency_ms: {p50: 200, p95: 700}, error_rate: 0.02}
+    client: {timeout_s: 2.5, retries: 2, cache_ttl_s: 30, breaker: {failures: 5, reset_s: 20}}
+
+# Presets the demo "Ops" panel can apply to any system at runtime.
+chaos_modes:
+  normal: {}
+  slow: {extra_latency_ms: 2500}
+  flaky: {error_rate: 0.5}
+  down: {error_rate: 1.0}

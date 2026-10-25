@@ -1,0 +1,89 @@
+# Fictional lender terms for demo purposes. Not any real institution's policy.
+family: credit_card
+title: Credit Card - Most Important Terms and Conditions
+owner: Cards Product Team
+
+versions:
+  - version: "2026.1"
+    effective_from: 2026-01-01
+    rules:
+      - id: CC-EMI-1
+        title: Which purchases can be converted to EMI
+        tags: [emi, convert, conversion, purchase, eligibility, instalment]
+        params: {min_amount: 2500, max_days_since_purchase: 30, excluded_categories: [CASH, FUEL, JEWELLERY]}
+        text: >-
+          A purchase of Rs 2,500 or more can be converted to EMI within 30 days of the purchase
+          date. Cash withdrawals, fuel and jewellery purchases cannot be converted. A purchase can
+          be converted only once.
+
+      - id: CC-EMI-2
+        title: EMI conversion interest and fees
+        tags: [emi, convert, interest, rate, processing fee, tenure, charges]
+        params: {annual_rate_pct: 15.0, tenures: [3, 6, 9, 12], processing_fee_pct: 1.0, processing_fee_min: 199, gst_pct: 18}
+        text: >-
+          Converted purchases carry interest at 15% a year on a reducing balance, over 3, 6, 9
+          or 12 months. A one-time processing fee of 1% of the amount (minimum Rs 199) plus GST
+          at 18% is billed in the next statement.
+
+      - id: CC-EMI-3
+        title: Effect of EMI conversion on the credit limit
+        tags: [emi, limit, available limit, blocked]
+        params: {}
+        text: >-
+          The converted amount stays blocked from the credit limit and is released as each EMI's
+          principal is paid.
+
+      - id: CC-INTL-1
+        title: International usage
+        tags: [international, overseas, abroad, foreign, declined, enable, travel, usage]
+        params: {default_enabled: false, requires_otp: true, markup_pct: 3.5}
+        text: >-
+          International usage is off by default to protect against fraud. The cardholder can turn
+          it on or off at any time in the app after OTP verification. Foreign currency
+          transactions carry a 3.5% markup plus GST.
+
+      - id: CC-DSP-1
+        title: Disputing a transaction
+        tags: [dispute, unauthorised, unrecognised, chargeback, fraud, refund, transaction]
+        params: {window_days: 60, temporary_credit_working_days: 10, sla_working_days: 30}
+        text: >-
+          A transaction can be disputed within 60 days of the transaction date. A temporary
+          credit is posted within 10 working days while the dispute is investigated, and the
+          investigation is completed within 30 working days.
+
+      - id: CC-FEE-1
+        title: Late payment fee
+        tags: [late fee, due date, minimum due, charges, payment]
+        params:
+          slabs:
+            - {up_to_balance: 500, fee: 0}
+            - {up_to_balance: 5000, fee: 500}
+            - {up_to_balance: 20000, fee: 750}
+            - {up_to_balance: null, fee: 1200}
+        text: >-
+          If the minimum amount due is not paid by the due date, a late payment fee applies on
+          the statement balance: nil up to Rs 500, Rs 500 up to Rs 5,000, Rs 750 up to Rs 20,000
+          and Rs 1,200 above that.
+
+    reference:
+      card_decline_codes:
+        INTL_USAGE_DISABLED:
+          label: International usage turned off
+          explanation: The card is not enabled for international transactions, so the overseas merchant's request was declined.
+          customer_attributable: false
+          advice: Turn on international usage in the app (OTP required) and retry the payment.
+        INSUFFICIENT_LIMIT:
+          label: Not enough available limit
+          explanation: The transaction amount was more than the available credit limit at that moment.
+          customer_attributable: true
+          advice: Pay down part of the outstanding to free up limit, or retry with a smaller amount.
+        INCORRECT_PIN:
+          label: Incorrect PIN
+          explanation: The PIN entered at the terminal was incorrect.
+          customer_attributable: true
+          advice: Retry with the correct PIN or reset it in the app.
+        SUSPECTED_FRAUD:
+          label: Blocked by fraud checks
+          explanation: The transaction looked unusual and was blocked as a precaution.
+          customer_attributable: false
+          advice: Confirm the transaction when contacted, then retry.

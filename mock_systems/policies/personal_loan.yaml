@@ -1,0 +1,204 @@
+# Fictional lender terms for demo purposes. Not any real institution's policy.
+family: personal_loan
+title: Personal Loan - Key Facts and Terms
+owner: Retail Lending Product Team
+
+# Each version lists only the rules it adds or changes. The policy system
+# resolves the version in force on a given date.
+versions:
+  - version: "2025.1"
+    effective_from: 2025-04-01
+    rules:
+      - id: RR-1
+        title: Floating rate is linked to the Northwind Benchmark Rate
+        tags: [interest, rate, floating, benchmark, nwbr, reset, emi, increase, change]
+        applies_to: {rate_type: [floating]}
+        params: {benchmark: NWBR, reset_every_months: 3}
+        text: >-
+          For floating rate loans, the interest rate is the Northwind Benchmark Rate (NWBR)
+          plus a spread fixed at sanction. The spread does not change during the loan.
+          The rate is reset every 3 months counted from the disbursal date, using the NWBR
+          in force on the reset date. The revised rate applies from the first EMI that falls
+          due after the reset date.
+
+      - id: RR-2
+        title: How the EMI changes when a floating rate is reset
+        tags: [emi, reset, increase, decrease, tenure, revision, change]
+        applies_to: {rate_type: [floating]}
+        params: {default_on_reset: revise_emi_keep_maturity, notice_days: 7}
+        text: >-
+          When the rate is reset, the EMI is recalculated on the outstanding principal so that
+          the loan still closes on its original maturity date. The customer is informed of the
+          revised EMI by SMS and email at least 7 days before the first revised EMI.
+
+      - id: RR-3
+        title: Option to extend tenure instead of a higher EMI
+        tags: [emi, tenure, extension, reset, options, restructure]
+        applies_to: {rate_type: [floating]}
+        params: {max_total_tenure_months: 72, sla_working_days: 3}
+        text: >-
+          After a rate increase, the customer may ask to keep the previous EMI and extend the
+          tenure instead, provided the total tenure does not exceed 72 months. The request is
+          processed within 3 working days and applies from the next EMI.
+
+      - id: PP-1
+        title: When part-prepayment is allowed
+        tags: [prepayment, part-prepayment, prepay, lock-in, eligibility]
+        params: {min_emis_paid: {fixed: 6, floating: 1}}
+        text: >-
+          Part-prepayment is allowed once at least 1 EMI has been paid on a floating rate loan,
+          and at least 6 EMIs have been paid on a fixed rate loan (the lock-in period).
+
+      - id: PP-2
+        title: Minimum part-prepayment amount
+        tags: [prepayment, part-prepayment, prepay, minimum, amount]
+        params: {min_amount: 25000}
+        text: >-
+          Each part-prepayment must be at least Rs 25,000.
+
+      - id: PP-3
+        title: Number of part-prepayments in a financial year
+        tags: [prepayment, part-prepayment, prepay, limit, financial year]
+        params: {max_per_financial_year: 4}
+        text: >-
+          Up to 4 part-prepayments are allowed in a financial year (April to March).
+
+      - id: PP-4
+        title: Part-prepayment charges
+        tags: [prepayment, part-prepayment, prepay, charges, fees, penalty]
+        params: {charge_pct: {fixed: 3.0, floating: 0.0}, gst_pct: 18}
+        text: >-
+          In line with RBI guidelines, no part-prepayment charges apply to floating rate loans
+          taken by individuals. For fixed rate loans, a charge of 3% of the amount prepaid plus
+          GST at 18% applies.
+
+      - id: PP-5
+        title: Effect of a part-prepayment on EMI or tenure
+        tags: [prepayment, part-prepayment, prepay, emi, tenure, reduce, interest, savings]
+        params: {default_mode: reduce_tenure, modes: [reduce_tenure, reduce_emi]}
+        text: >-
+          A part-prepayment reduces the principal outstanding. By default the EMI stays the same
+          and the tenure is shortened. The customer may instead choose to keep the tenure and
+          reduce the EMI. The change applies from the next EMI.
+
+      - id: FC-1
+        title: When foreclosure is allowed
+        tags: [foreclosure, foreclose, close, preclosure, full prepayment, eligibility, lock-in]
+        params: {min_emis_paid: {fixed: 6, floating: 1}}
+        text: >-
+          The loan can be foreclosed (closed fully before maturity) once at least 1 EMI has been
+          paid on a floating rate loan, and at least 6 EMIs on a fixed rate loan.
+
+      - id: FC-2
+        title: Foreclosure charges
+        tags: [foreclosure, foreclose, preclosure, charges, penalty, fees, waiver]
+        params:
+          floating_pct: 0.0
+          fixed_slabs:
+            - {up_to_months_since_disbursal: 24, pct: 4.0}
+            - {up_to_months_since_disbursal: null, pct: 2.0}
+          gst_pct: 18
+        text: >-
+          In line with RBI guidelines, no foreclosure charges apply to floating rate loans taken
+          by individuals. For fixed rate loans the charge is 4% of the principal outstanding if
+          foreclosed within 24 months of disbursal, and 2% after that, plus GST at 18%.
+
+      - id: FC-3
+        title: How the foreclosure amount is calculated
+        tags: [foreclosure, foreclose, amount, payoff, accrued interest, overdue]
+        params: {day_count: 365}
+        text: >-
+          Foreclosure amount = principal outstanding + interest accrued from the last EMI due
+          date to the foreclosure date (actual days / 365) + any overdue EMIs and unpaid charges
+          + foreclosure charges and GST, if applicable.
+
+      - id: BC-1
+        title: EMI bounce charges
+        tags: [bounce, failed, payment, charges, fee, nach, auto-debit, penalty]
+        params: {amount: 450, gst_pct: 18}
+        text: >-
+          If an EMI auto-debit fails, a bounce charge of Rs 450 plus GST at 18% is levied for
+          each failed instalment.
+
+      - id: BC-2
+        title: Re-presentation of a failed auto-debit
+        tags: [bounce, failed, payment, retry, re-presentation, nach]
+        params: {represent_after_days: 2}
+        text: >-
+          A failed auto-debit is presented again once, 2 days later. The customer may also pay
+          the EMI directly through UPI or net banking to avoid further delay.
+
+      - id: BC-3
+        title: Reversal of charges for failures not caused by the customer
+        tags: [bounce, reversal, refund, waiver, dispute, technical, failed, charges]
+        params: {window_days: 120, auto_reverse_reason_codes: [TECHNICAL_DECLINE, SPONSOR_BANK_ERROR]}
+        text: >-
+          If an auto-debit failed for a reason not attributable to the customer (for example a
+          technical decline by the bank or payment network), the bounce charge is reversed when
+          the customer raises a dispute within 120 days of the charge.
+
+      - id: MD-1
+        title: Auto-debit (NACH) mandate
+        tags: [mandate, nach, auto-debit, bank account, update, inactive, cancelled]
+        params: {sla_working_days: 5}
+        text: >-
+          EMIs are collected through a NACH auto-debit mandate. If the mandate becomes inactive
+          (for example the bank account was closed or changed), the customer must register a new
+          mandate. Registration takes up to 5 working days; until then EMIs must be paid directly
+          before the due date.
+
+      - id: SR-1
+        title: Service request timelines
+        tags: [service request, ticket, sla, timeline, turnaround]
+        params: {sla_working_days: {PREPAYMENT: 2, FORECLOSURE: 3, DISPUTE: 7, MANDATE_UPDATE: 5, TENURE_CHANGE: 3, STATEMENT: 0, GENERAL: 3}}
+        text: >-
+          Prepayment requests are processed within 2 working days, foreclosure within 3,
+          disputes within 7, mandate updates within 5 and other requests within 3 working days.
+
+    reference:
+      payment_reason_codes:
+        INSUFFICIENT_FUNDS:
+          label: Insufficient balance
+          explanation: The bank declined the auto-debit because the account did not have enough balance on the due date.
+          customer_attributable: true
+          advice: Keep the EMI amount in the account a day before the due date.
+        TECHNICAL_DECLINE:
+          label: Technical decline at the bank
+          explanation: The debit failed because of a technical issue at the customer's bank or the payment network, not because of the customer.
+          customer_attributable: false
+          advice: No action needed on the account. The bounce charge can be reversed on request.
+        SPONSOR_BANK_ERROR:
+          label: Processing error at our collecting bank
+          explanation: The debit failed because of a processing error at the collecting bank.
+          customer_attributable: false
+          advice: No action needed. The bounce charge can be reversed on request.
+        MANDATE_INACTIVE:
+          label: Auto-debit mandate not active
+          explanation: The bank rejected the debit because the NACH mandate was no longer active, usually because the account was closed or the mandate was cancelled.
+          customer_attributable: true
+          advice: Register a new mandate and pay EMIs directly until it is active.
+        ACCOUNT_FROZEN:
+          label: Account frozen
+          explanation: The bank could not debit the account because it was frozen or restricted.
+          customer_attributable: true
+          advice: Contact your bank to lift the restriction.
+
+  - version: "2026.1"
+    effective_from: 2026-04-01
+    rules:
+      - id: PP-2
+        title: Minimum part-prepayment amount
+        tags: [prepayment, part-prepayment, prepay, minimum, amount]
+        params: {min_amount: 10000}
+        text: >-
+          Each part-prepayment must be at least Rs 10,000.
+        change_note: Reduced from Rs 25,000 to Rs 10,000 from 1 April 2026.
+
+      - id: BC-1
+        title: EMI bounce charges
+        tags: [bounce, failed, payment, charges, fee, nach, auto-debit, penalty]
+        params: {amount: 500, gst_pct: 18}
+        text: >-
+          If an EMI auto-debit fails, a bounce charge of Rs 500 plus GST at 18% is levied for
+          each failed instalment.
+        change_note: Revised from Rs 450 to Rs 500 from 1 April 2026.

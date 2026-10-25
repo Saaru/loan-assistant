@@ -1,0 +1,42 @@
+id: card_servicing
+name: Card servicing
+order: 2
+tagline: Declines, EMI conversion, disputes and card controls
+
+# The only new code for this workflow is the cards domain module. Runtime,
+# connectors, policy engine, actions, OTP, audit, telemetry and UI are shared.
+modules:
+  - app.domains.common.tools
+  - app.domains.cards.tools
+
+policy_families: [credit_card]
+context: [customer, cards]
+panels: [profile, cards, card_transactions, requests]
+effort: low
+
+tools:
+  - list_cards
+  - get_card_transactions
+  - simulate_card_emi
+  - convert_to_emi
+  - set_international_usage
+  - raise_card_dispute
+  - list_service_requests
+  - lookup_policy
+  - create_service_request
+  - confirm_action
+
+instructions: |
+  Credit cards: dues, declines, EMI conversion, international usage, disputes.
+  - Declined -> get_card_transactions(status declined): reason in plain words, then offer the fix
+    (e.g. set_international_usage).
+  - EMI conversion -> find the purchase, simulate_card_emi to compare tenures (mention fee and total cost),
+    then convert_to_emi once they choose.
+  - Unrecognised charge -> show matching transactions, then offer raise_card_dispute.
+  - Refer to cards by last 4 digits only.
+
+suggested_prompts:
+  - Why was my card declined in Dubai?
+  - Can I convert my Skyline Electronics purchase into EMIs? What would it cost?
+  - I don't recognise a Streamly charge on my card.
+  - How much do I owe and when is it due?

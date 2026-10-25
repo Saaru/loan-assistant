@@ -26,6 +26,20 @@ Open http://127.0.0.1:8000 and pick a demo customer. Demo data is generated for 
 
 Deep link for demos: `http://127.0.0.1:8000/?customer=CUST1002&workspace=loan_servicing`.
 
+## Using an AI coding agent
+
+The repo is set up for AI coding tools. [AGENTS.md](AGENTS.md) (read by Codex, Cursor, GitHub Copilot and most agents) and [CLAUDE.md](CLAUDE.md) explain how to set up, run, verify headlessly through the API, and change the code safely. In Claude Code these skills are available:
+
+| Skill | What it does |
+|---|---|
+| `/run-demo` | Sets up, starts, verifies with the real model and walks through the demo journeys |
+| `/tour` | Guided architecture walkthrough with file references |
+| `/chaos-demo` | Takes a backend system down and shows how the assistant copes |
+| `/add-action` | Adds a customer-confirmed action with OTP, idempotency and audit |
+| `/add-workflow` | Adds a new use-case pack (collections, insurance...) on the same platform |
+
+For example: open the repo in Claude Code and type `/run-demo`, or ask any agent "set this project up and show me what it does".
+
 ## Demo journeys
 
 | Customer | Workspace | Try | What it shows |
